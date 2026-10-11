@@ -1,33 +1,23 @@
-"""Ingest real multi-source data into Neo4j — and LEAVE IT THERE.
+"""Graph loading pipelines, extracted from the ingest driver.
 
-Unlike the demos, this script does not clean up. It builds a persistent graph you
-can browse in the Neo4j console.
-
-    .venv/bin/python scripts/ingest.py                 # default slice
-    .venv/bin/python scripts/ingest.py --condition melanoma --trials 80 --ae 80
-    .venv/bin/python scripts/ingest.py --wipe          # clear and rebuild
-
-Sources (all open, no API key needed):
-    ClinicalTrials.gov v2 · openFDA FAERS · RxNav/RxNorm · HGNC · ChEMBL
+These were inline in `scripts/ingest.py`. They live here so notebooks can import
+them instead of restating them, and so they are importable and testable.
 """
 
 from __future__ import annotations
 
-import argparse
-import sys
 from datetime import datetime, timezone
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT))
+from ..graph.store import GraphClient
+from ..sources import adapters
 
-import config  # noqa: E402
-from biomedical.foundation import RunManifest  # noqa: E402
-from biomedical.graph.store import GraphClient  # noqa: E402
-from biomedical.sources import adapters, resolver  # noqa: E402
+NOW = lambda: datetime.now(timezone.utc)  # noqa: E731
 
-NOW = datetime.now(timezone.utc)
 GENES = ["BRAF", "NRAS", "KIT", "PTEN", "TP53", "CDKN2A", "MITF", "TERT"]
+
+def _log(msg: str) -> None:
+    print(msg, flush=True)
+
 
 SCHEMA = [
     "CREATE CONSTRAINT re_id IF NOT EXISTS FOR (e:ResolvedEntity) REQUIRE e.entity_id IS UNIQUE",
@@ -43,22 +33,15 @@ SCHEMA = [
     "CREATE INDEX men_text IF NOT EXISTS FOR (m:Mention) ON (m.raw_text)",
 ]
 
-PROV = "n.source = $source, n.source_version = $sv, n.retrieved_at = $at, n.tier = $tier"
-
-
-def log(msg: str) -> None:
-    print(msg, flush=True)
-
-
 def ensure_schema(c: GraphClient) -> None:
     for stmt in SCHEMA:
         c.run(stmt)
-    log(f"  schema: {c.constraint_count()} constraints")
+    _log(f"  schema: {c.constraint_count()} constraints")
 
 
 def wipe(c: GraphClient) -> None:
     n = c.run("MATCH (n) RETURN count(n) AS c")[0]["c"]
-    log(f"  wiping {n} existing nodes ...")
+    _log(f"  wiping {n} existing nodes ...")
     while True:
         res = c.run("MATCH (n) WITH n LIMIT 10000 DETACH DELETE n RETURN count(n) AS c")
         if not res or res[0]["c"] == 0:
@@ -194,14 +177,15 @@ def resolve_mentions(c: GraphClient, limit: int) -> dict:
         limit=limit,
     )
     raws = [r["raw"] for r in rows]
-    log(f"  resolving {len(raws)} distinct mention strings against RxNorm ...")
+    _log(f"  resolving {len(raws)} distinct mention strings against RxNorm ...")
 
-    resolutions: list[resolver.Resolution] = []
+    resolutions = []
     for i, raw in enumerate(raws, 1):
+        from ..sources import resolver
         res = resolver.resolve_drug(raw)
         resolutions.append(res)
         if i % 10 == 0:
-            log(f"    {i}/{len(raws)}")
+            _log(f"    {i}/{len(raws)}")
 
         payload = {
             "raw": res.raw, "norm": res.normalised, "method": res.method.label,
@@ -255,12 +239,13 @@ def resolve_mentions(c: GraphClient, limit: int) -> dict:
                 raw=res.raw, cands=payload["cands"], at=NOW.isoformat(),
             )
 
-    log("\n  sample resolutions:")
+    _log("\n  sample resolutions:")
     for res in resolutions[:12]:
-        log(f"    {res.describe()}")
+        _log(f"    {res.describe()}")
 
-    report = resolver.evaluate_consistency(resolutions[:25])
-    log("\n  " + report.describe().replace("\n", "\n  "))
+    from ..sources import resolver as _r
+    report = _r.evaluate_consistency(resolutions[:25])
+    _log("\n  " + report.describe().replace("\n", "\n  "))
     return {
         "attempted": len(resolutions),
         "resolved": sum(1 for r in resolutions if r.resolved),
@@ -296,135 +281,3 @@ def link_drugs_to_reactions(c: GraphClient) -> int:
     return rows[0]["c"] if rows else 0
 
 
-def summarise(c: GraphClient) -> None:
-    log("\n" + "=" * 70)
-    log("GRAPH SUMMARY")
-    log("=" * 70)
-    for q, title in [
-        ("MATCH (n) RETURN count(n) AS v", "total nodes"),
-        ("MATCH ()-[r]->() RETURN count(r) AS v", "total relationships"),
-    ]:
-        log(f"  {title:<28} {c.run(q)[0]['v']}")
-
-    log("\n  nodes by label:")
-    for r in c.run(
-        "MATCH (n) UNWIND labels(n) AS l "
-        "WITH l, count(*) AS c WHERE NOT l IN ['Provenanced','ResolvedEntity'] "
-        "RETURN l, c ORDER BY c DESC"
-    ):
-        log(f"    {r['l']:<24} {r['c']}")
-
-    log("\n  relationships by type:")
-    for r in c.run("MATCH ()-[r]->() RETURN type(r) AS t, count(*) AS c ORDER BY c DESC"):
-        log(f"    {r['t']:<24} {r['c']}")
-
-    log("\n  provenance tiers:")
-    for r in c.run(
-        "MATCH (n:Provenanced) RETURN n.tier AS tier, count(*) AS c ORDER BY tier"
-    ):
-        log(f"    {r['tier']:<24} {r['c']}")
-
-    log("\n  sources:")
-    for r in c.run(
-        "MATCH (n:Provenanced) WHERE n.source IS NOT NULL "
-        "RETURN n.source AS s, n.source_version AS v, count(*) AS c ORDER BY c DESC"
-    ):
-        log(f"    {r['s']:<24} {str(r['v'])[:12]:<12} {r['c']}")
-
-    log("\n  resolution confidence bands:")
-    for r in c.run(
-        "MATCH ()-[r:RESOLVES_TO]->() RETURN r.method AS m, count(*) AS c, "
-        "round(avg(r.confidence),2) AS conf ORDER BY c DESC"
-    ):
-        log(f"    {str(r['m']):<34} n={r['c']:<4} conf={r['conf']}")
-
-    backlog = c.run(
-        "MATCH ()-[r:RESOLVES_TO]->() WHERE r.review_state='needs_review' RETURN count(*) AS c"
-    )[0]["c"]
-    unlinked = c.run("MATCH (m:Mention) WHERE m.unlinked RETURN count(*) AS c")[0]["c"]
-    log(f"\n  review backlog (needs_review)  {backlog}")
-    log(f"  unlinked mentions              {unlinked}")
-    log("  (both published deliberately - a visible backlog is more credible than none)")
-
-    log("\n  try these in the Neo4j console:")
-    log("    MATCH (t:ClinicalTrial)-[:INVESTIGATES]->(d:Drug) RETURN t,d LIMIT 25")
-    log("    MATCH (m:Mention)-[r:RESOLVES_TO]->(d:Drug) "
-        "WHERE r.review_state='needs_review' RETURN m,r,d LIMIT 25")
-    log("    MATCH (m:Mention)-[c:CANDIDATE_FOR]->(d:Drug) RETURN m,c,d LIMIT 50")
-    log("    MATCH (old:Identifier {authority:'hgnc-symbol'})-[:REPLACED_BY]->(g:Gene) RETURN old,g")
-    log("    MATCH (d:Drug)-[a:ASSOCIATED_WITH_REACTION]->(x:Reaction) "
-        "RETURN d.canonical_name, x.term, a.report_count ORDER BY a.report_count DESC LIMIT 20")
-
-
-def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--condition", default="melanoma")
-    ap.add_argument("--trials", type=int, default=60)
-    ap.add_argument("--ae", type=int, default=60)
-    ap.add_argument("--resolve", type=int, default=45)
-    ap.add_argument("--wipe", action="store_true")
-    args = ap.parse_args()
-
-    cfg = config.load()
-    if not cfg.neo4j.configured:
-        log("neo4j not configured")
-        return 1
-
-    log(f"ingesting slice: condition={args.condition!r} trials<={args.trials} ae<={args.ae}")
-    log(f"rxnorm version: {adapters.rxnorm_version()}\n")
-
-    log("fetching from live sources ...")
-    trials = adapters.fetch_trials(args.condition, limit=args.trials)
-    log(f"  clinicaltrials.gov: {len(trials)} trials")
-    aes = adapters.fetch_adverse_events(
-        f'patient.drug.openfda.pharm_class_epc:"antineoplastic*"', limit=args.ae
-    ) if False else adapters.fetch_adverse_events(
-        f'patient.reaction.reactionmeddrapt:"{args.condition}"', limit=args.ae
-    )
-    log(f"  openfda faers:      {len(aes)} reports")
-    genes = adapters.fetch_genes(GENES)
-    log(f"  hgnc:               {len(genes)} genes")
-
-    with GraphClient(
-        uri=cfg.neo4j.uri, username=cfg.neo4j.username,
-        password=cfg.neo4j.password.reveal(), database=cfg.neo4j.database,
-    ) as c:
-        log("\npreparing graph ...")
-        if args.wipe:
-            wipe(c)
-        ensure_schema(c)
-
-        log("\nloading ...")
-        log(f"  trials:  {load_trials(c, trials)}")
-        log(f"  reports: {load_adverse_events(c, aes)}")
-        log(f"  genes:   {load_genes(c, genes)}")
-
-        log("\nentity resolution (RxNorm) ...")
-        stats = resolve_mentions(c, args.resolve)
-
-        log("\nderiving relationships ...")
-        log(f"  trial -> drug:    {link_drugs_to_trials(c)}")
-        log(f"  drug  -> reaction:{link_drugs_to_reactions(c)}")
-
-        summarise(c)
-
-        manifest = RunManifest.create(
-            design={"condition": args.condition, "trials": args.trials, "ae": args.ae},
-            source_versions={
-                "clinicaltrials.gov": "v2",
-                "openfda.faers": "faers",
-                "rxnorm": adapters.rxnorm_version(),
-                "hgnc": "hgnc-current",
-            },
-            slice_params={"condition": args.condition},
-            trust_policy_version=cfg.trust.policy_version,
-            notes={"resolution": str(stats)},
-        )
-        p = manifest.write(ROOT / "manifests")
-        log(f"\nmanifest: {p.relative_to(ROOT)}")
-        log("graph PERSISTED - not cleaned up.")
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

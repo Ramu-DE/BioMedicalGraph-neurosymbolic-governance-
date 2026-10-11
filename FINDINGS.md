@@ -60,10 +60,34 @@ The rubric contains the correct assessment. It is reported as a labelled control
 
 ---
 
+## Run-to-run variance — the numbers above are one run
+
+Re-executing the identical design at temperature 0 (see
+`notebooks/09_four_arm_evaluation.ipynb`) did **not** reproduce the blind arm:
+
+| | this run | re-run |
+|---|---|---|
+| judge_blind TNR | 0.400 (2/5) | 0.600 (3/5) |
+| judge_blind kappa | 0.273 [−0.286, 0.800] | 0.471 [−0.125, 1.000] |
+| judge_grounded kappa | 0.833 [0.437, 1.000] | 0.833 [0.437, 1.000] |
+| deterministic kappa | 1.000 | 1.000 |
+
+The deterministic and grounded arms reproduced exactly; the blind arm moved by
+one case, which at n=5 true negatives shifts TNR by 20 points.
+
+So the judge is not deterministic across runs even at temperature 0. The
+confound is real and the original claim stays withdrawn — but the **magnitude**
+of the evidence-access effect is not established by a single run, and the two
+kappa intervals overlap heavily. The honest statement is: *giving the judge the
+same facts improved it in both runs, by an amount this design cannot yet pin
+down.* The fix is repeated runs with variance reported.
+
 ## Honest limits
 
 - **n = 12.** Five true-negative opportunities. Every interval above is wide and
   stated as such.
+- **Single run per arm.** See the variance section above — the blind arm did not
+  reproduce on re-execution.
 - **One domain, one judge model, one prompt style, temperature 0.** No claim about
   LLM judges in general.
 - **The deterministic arm was built against these cases.** It encodes the

@@ -132,18 +132,37 @@ def load() -> Config:
     return Config()
 
 
+def _redact_host(url: str) -> str:
+    """Keep the provider, hide the instance.
+
+    An Aura hostname and username are not the password, but they identify the
+    exact instance to target. This report lands in committed notebook outputs,
+    so the instance id is masked too.
+    """
+    if not url:
+        return "-"
+    scheme, _, rest = url.partition("://")
+    host = rest.split("@")[-1].split("/")[0]
+    parts = host.split(".")
+    if len(parts) > 2:
+        parts[0] = "<redacted>"
+    elif parts:
+        parts[0] = "<redacted>"
+    return f"{scheme}://{'.'.join(parts)}" if scheme else ".".join(parts)
+
+
 def report() -> str:
-    """Redacted readiness report. Safe to paste anywhere."""
+    """Redacted readiness report. Safe to commit — no secret, no instance id."""
     c = load()
-    host = c.neo4j.uri.split("@")[-1] or "-"
     lines = [
         "readiness",
         "=" * 58,
-        f"  neo4j      uri={host or '-'}",
-        f"             user={c.neo4j.username or '-'}  db={c.neo4j.database}",
+        f"  neo4j      uri={_redact_host(c.neo4j.uri)}",
+        f"             user fp={Secret(c.neo4j.username).fingerprint}"
+        f"  db fp={Secret(c.neo4j.database).fingerprint}",
         f"             password fp={c.neo4j.password.fingerprint}",
         f"             configured={c.neo4j.configured}",
-        f"  qdrant     url={c.qdrant.url.split('//')[-1][:40] or '-'}",
+        f"  qdrant     url={_redact_host(c.qdrant.url)}",
         f"             api_key fp={c.qdrant.api_key.fingerprint}",
         f"             configured={c.qdrant.configured}",
         f"  embedding  provider={c.embedding.provider}  model={c.embedding.model_id}  dim={c.embedding.dim}",

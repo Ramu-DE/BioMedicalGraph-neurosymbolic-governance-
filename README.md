@@ -238,24 +238,26 @@ network.** That is a hard invariant, verified in CI.
 ## Running it
 
 ```bash
-python config.py                         # redacted readiness report
-python scripts/verify_services.py        # connectivity + capability probe
-python -m pytest                         # 197 tests, credential-free
-python scripts/check_gate1.py            # foundation gate + claims lint
-
-# needs Neo4j
-python scripts/ingest.py --condition melanoma --trials 200 --ae 60
-python scripts/resolve_diseases.py --limit 400
-python scripts/detect_conflicts.py
-python scripts/demo_fail_open.py
-python scripts/check_rule_identifiers.py --offline    # CI gate, no credentials
-
-# needs Bedrock
-python scripts/run_four_arm_eval.py
-
-# the UI
-python -m biomedical.ui                  # http://localhost:8099
+python config.py        # redacted readiness report — no secret, no instance id
+python -m pytest        # 197 tests, credential-free, no network
+python -m biomedical.ui # the inspection UI, http://localhost:8099
 ```
+
+Everything else is an **executed notebook with its outputs saved** — open one and
+the results are already there, no credentials needed to read it:
+
+| Notebook | Needs |
+|---|---|
+| [`02_foundation_gate`](notebooks/02_foundation_gate.ipynb) — trust boundary, `CANNOT_EVALUATE`, claims lint | **nothing** |
+| [`05_governance_decision_trace`](notebooks/05_governance_decision_trace.ipynb) — one decision, facts withheld and why | nothing |
+| [`09_four_arm_evaluation`](notebooks/09_four_arm_evaluation.ipynb) — the claim that got withdrawn | Bedrock |
+| [`04_entity_resolution`](notebooks/04_entity_resolution.ipynb) — derived confidence, three defects found by audit | Neo4j |
+| [`07_schema_evolution_fail_open`](notebooks/07_schema_evolution_fail_open.ipynb) — a rule that silently stops working | Neo4j |
+| [`08_conflict_detection`](notebooks/08_conflict_detection.ipynb) — confounding by indication | Neo4j |
+
+→ [`notebooks/README.md`](notebooks/README.md) for all nine, with runtimes.
+
+`02` needs no credentials at all. It is the one to read first.
 
 → [`UI.md`](./UI.md) · [`GRAPH.md`](./GRAPH.md) ·
 [`FINDINGS.md`](./FINDINGS.md) · [`STATUS.md`](./STATUS.md)

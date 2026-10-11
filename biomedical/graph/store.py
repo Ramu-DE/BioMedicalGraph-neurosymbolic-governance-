@@ -71,7 +71,18 @@ class GraphClient:
     _driver: Driver | None = None
 
     def __enter__(self) -> GraphClient:
-        self._driver = GraphDatabase.driver(self.uri, auth=(self.username, self.password))
+        # Notifications are disabled for two reasons: they are noisy schema hints
+        # ("property key does not exist" on an OPTIONAL MATCH is expected), and
+        # their text echoes the database name — which lands in committed notebook
+        # outputs. Errors still raise normally.
+        try:
+            self._driver = GraphDatabase.driver(
+                self.uri,
+                auth=(self.username, self.password),
+                notifications_min_severity="OFF",
+            )
+        except (TypeError, ValueError):   # older driver without the kwarg
+            self._driver = GraphDatabase.driver(self.uri, auth=(self.username, self.password))
         self._driver.verify_connectivity()
         return self
 
