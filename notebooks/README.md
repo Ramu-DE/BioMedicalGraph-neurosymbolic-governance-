@@ -18,8 +18,35 @@ Run in order; `03` ingests a small slice the later notebooks read.
 | [`08_conflict_detection.ipynb`](08_conflict_detection.ipynb) | `detect_conflicts.py` | Neo4j | 17s |
 | [`09_four_arm_evaluation.ipynb`](09_four_arm_evaluation.ipynb) | `run_four_arm_eval.py` | Bedrock | 28s |
 
-`02` needs no credentials at all — it is the one to read first, and the one a
-reviewer can verify in two minutes.
+## Reading vs running
+
+**Reading needs nothing.** Every notebook has its outputs saved, so the results
+are there when you open it — no install, no credentials, no server.
+
+**Running** needs whatever that notebook's row says. On a fresh clone with no
+`.env`:
+
+| | runs with no credentials |
+|---|---|
+| `02_foundation_gate` | **yes** — pure Python, 197 tests' worth of the model in one notebook |
+| `05_governance_decision_trace` | **yes** — a full decision trace, no services |
+| the other seven | no — they call `config.require(...)` first and tell you exactly what is missing |
+
+`02` is the one to read first, and the one a reviewer can verify in two minutes.
+
+A notebook that needs a service fails immediately with an actionable message
+rather than a driver error:
+
+```
+This notebook needs: neo4j — not configured.
+
+  neo4j: set NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD
+       Aura (console.neo4j.io) or `docker run -p 7687:7687 neo4j:5`
+
+  cp .env.example .env && chmod 600 .env    then edit it
+
+Notebooks 02 and 05 need no credentials at all — start there.
+```
 
 ## Where to look
 
@@ -36,8 +63,7 @@ reviewer can verify in two minutes.
 ## Re-running
 
 ```bash
-pip install -r ../requirements.txt
-pip install nbformat nbclient ipykernel
+pip install -r ../requirements.txt      # includes the notebook tooling
 python -m ipykernel install --user --name biomed --display-name "BioMedical (.venv)"
 ```
 

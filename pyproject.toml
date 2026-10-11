@@ -28,11 +28,17 @@ agent = [
 ui = [
     "nicegui>=2.0",
 ]
+# Re-executing the notebooks. Reading them needs nothing — the outputs are saved.
+notebooks = [
+    "nbformat>=5.10",
+    "nbclient>=0.10",
+    "ipykernel>=6.29",
+]
 dev = [
     "pytest>=8.0",
 ]
 all = [
-    "biomedical-context-layer[agent,ui,dev]",
+    "biomedical-context-layer[agent,ui,notebooks,dev]",
 ]
 
 [project.urls]

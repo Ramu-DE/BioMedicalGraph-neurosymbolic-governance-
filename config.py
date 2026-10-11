@@ -127,9 +127,56 @@ class Config:
     embedding: EmbeddingConfig = field(default_factory=EmbeddingConfig)
     trust: TrustConfig = field(default_factory=TrustConfig)
 
+    @property
+    def llm_configured(self) -> bool:
+        return _env("LLM_PROVIDER", default="none") != "none"
+
 
 def load() -> Config:
     return Config()
+
+
+class NotConfigured(RuntimeError):
+    """Raised with an actionable message instead of a driver-level error.
+
+    A fresh clone has no `.env`, so a notebook that needs Neo4j used to fail with
+    `ConfigurationError: URI scheme '' is not supported`, which tells a reader
+    nothing. This says what is missing and how to supply it.
+    """
+
+
+_HINTS = {
+    "neo4j": ("NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD",
+              "Aura (console.neo4j.io) or `docker run -p 7687:7687 neo4j:5`"),
+    "qdrant": ("QDRANT_URL, QDRANT_API_KEY",
+               "Qdrant Cloud (cloud.qdrant.io) or `docker run -p 6333:6333 qdrant/qdrant`"),
+    "bedrock": ("AWS_DEFAULT_REGION and AWS credentials, plus EMBEDDING_PROVIDER=bedrock",
+                "model access must also be enabled per-model in the Bedrock console"),
+}
+
+
+def available(*services: str) -> bool:
+    """True if every named service is configured."""
+    c = load()
+    checks = {"neo4j": c.neo4j.configured, "qdrant": c.qdrant.configured,
+              "bedrock": c.embedding.configured or c.llm_configured}
+    return all(checks.get(s, False) for s in services)
+
+
+def require(*services: str) -> None:
+    """Fail fast with a message a reader can act on."""
+    missing = [s for s in services if not available(s)]
+    if not missing:
+        return
+    lines = [f"This notebook needs: {', '.join(missing)} — not configured.", ""]
+    for s in missing:
+        env, how = _HINTS.get(s, ("see .env.example", ""))
+        lines.append(f"  {s}: set {env}")
+        if how:
+            lines.append(f"       {how}")
+    lines += ["", "  cp .env.example .env && chmod 600 .env    then edit it",
+              "", "Notebooks 02 and 05 need no credentials at all — start there."]
+    raise NotConfigured("\n".join(lines))
 
 
 def _redact_host(url: str) -> str:

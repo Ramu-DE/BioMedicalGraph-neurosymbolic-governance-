@@ -10,5 +10,10 @@ boto3>=1.34
 # Optional: the inspection UI (python -m biomedical.ui)
 nicegui>=2.0
 
+# Optional: re-executing the notebooks
+nbformat>=5.10
+nbclient>=0.10
+ipykernel>=6.29
+
 # Dev
 pytest>=8.0

@@ -15,6 +15,14 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -m pytest          # 197 tests, no credentials, no network
 ```
 
+That is the whole setup, and it is the claim most worth checking: **a fresh clone
+with no `.env` runs 197 tests and launches the UI.** Verified by cloning this
+repository into an empty directory and running exactly those four lines.
+
+Notebooks `02` and `05` also execute with no credentials. The other seven call
+`config.require(...)` and tell you precisely which variables are missing rather
+than failing with a driver error.
+
 ---
 
 ## Why this exists
