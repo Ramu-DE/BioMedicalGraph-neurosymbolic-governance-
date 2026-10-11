@@ -1,0 +1,44 @@
+# Declarative governance rules. Carried forward from v1's format.
+#
+# Note `safety.cdkn2_loss_requires_genotyping`: it cites the gene symbol CDKN2,
+# which was correct when the rule was written and which HGNC has since renamed to
+# CDKN2A. The rule has not been touched. That is the fail-open this pack exists
+# to demonstrate.
+
+rules:
+  - id: safety.cdkn2_loss_requires_genotyping
+    severity: block
+    description: >
+      Trials investigating a CDKN2-pathway agent must record a genotyping plan.
+    authored: "2016-04-02"
+    when:
+      entity: ClinicalTrial
+      gene_symbol: CDKN2
+      without_property: genotyping_plan
+
+  - id: safety.mitf_amplification_disclosure
+    severity: warn
+    description: Amplification findings for WS2A must be disclosed in the summary.
+    authored: "2015-11-18"
+    when:
+      entity: ClinicalTrial
+      gene_symbol: WS2A
+      without_property: disclosure_summary
+
+  - id: safety.braf_mutation_requires_genotyping
+    severity: block
+    description: Trials of BRAF-targeted agents must record a genotyping plan.
+    authored: "2024-01-10"
+    when:
+      entity: ClinicalTrial
+      gene_symbol: BRAF
+      without_property: genotyping_plan
+
+  - id: governance.trial_still_recruiting
+    severity: warn
+    description: A recruiting trial cannot support a final efficacy claim.
+    authored: "2023-06-01"
+    when:
+      entity: ClinicalTrial
+      property: status
+      equals: RECRUITING

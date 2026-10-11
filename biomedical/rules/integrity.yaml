@@ -1,0 +1,16 @@
+# Rule-integrity pack (component 01 R4, schema-evolution spec R3).
+#
+# A rule depending on an identifier that an external vocabulary has withdrawn,
+# renamed or obsoleted cannot be evaluated. It must BLOCK rather than return
+# "no violation found", because those two states are indistinguishable to a
+# caller and the second is a fail-open.
+
+rules:
+  - id: integrity.rule_cites_obsolete_identifier
+    severity: block
+    description: >
+      A governance rule depends on an external identifier that has moved. The rule
+      cannot be evaluated and the governed action must not proceed on its silence.
+    when:
+      rule_dependency:
+        change_kind: [renamed, withdrawn, obsoleted_with_replacement, obsoleted_orphan]

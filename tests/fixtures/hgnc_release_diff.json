@@ -1,0 +1,64 @@
+{
+  "authority": "hgnc-symbol",
+  "release_from": "historical",
+  "release_to": "current",
+  "_note": "Captured from the live HGNC-derived graph diff. The final entry is a synthetic orphan so the unrecoverable branch is testable; it is a fixture, not a claim about HGNC.",
+  "changes": [
+    {
+      "old_value": "CDKN2",
+      "new_value": "CDKN2A",
+      "change_kind": "renamed",
+      "stable_id": "HGNC:1787",
+      "entity_name": "cyclin dependent kinase inhibitor 2A"
+    },
+    {
+      "old_value": "MLM",
+      "new_value": "CDKN2A",
+      "change_kind": "renamed",
+      "stable_id": "HGNC:1787",
+      "entity_name": "cyclin dependent kinase inhibitor 2A"
+    },
+    {
+      "old_value": "PBT",
+      "new_value": "KIT",
+      "change_kind": "renamed",
+      "stable_id": "HGNC:6342",
+      "entity_name": "KIT proto-oncogene, receptor tyrosine kinase"
+    },
+    {
+      "old_value": "WS2",
+      "new_value": "MITF",
+      "change_kind": "renamed",
+      "stable_id": "HGNC:7105",
+      "entity_name": "melanocyte inducing transcription factor"
+    },
+    {
+      "old_value": "WS2A",
+      "new_value": "MITF",
+      "change_kind": "renamed",
+      "stable_id": "HGNC:7105",
+      "entity_name": "melanocyte inducing transcription factor"
+    },
+    {
+      "old_value": "BZS",
+      "new_value": "PTEN",
+      "change_kind": "renamed",
+      "stable_id": "HGNC:9588",
+      "entity_name": "phosphatase and tensin homolog"
+    },
+    {
+      "old_value": "MHAM",
+      "new_value": "PTEN",
+      "change_kind": "renamed",
+      "stable_id": "HGNC:9588",
+      "entity_name": "phosphatase and tensin homolog"
+    },
+    {
+      "old_value": "FIXTURE_ORPHAN_SYMBOL",
+      "new_value": null,
+      "change_kind": "obsoleted_orphan",
+      "stable_id": "HGNC:FIXTURE",
+      "entity_name": "synthetic fixture - exercises the no-replacement branch"
+    }
+  ]
+}

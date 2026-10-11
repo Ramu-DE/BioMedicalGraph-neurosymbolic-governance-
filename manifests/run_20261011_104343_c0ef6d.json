@@ -1,0 +1,19 @@
+{
+  "code_commit": "not-a-git-repo",
+  "created_at": "2026-10-11T10:43:43.226010+00:00",
+  "design_hash": "6982e7780ee5e6b4",
+  "notes": {
+    "bands": "{'multiple_candidates': 228, 'exact_synonym_match': 24, 'normalised_exact': 6, 'exact_identifier': 23, 'single_fuzzy_above_threshold': 19}",
+    "needs_review": "247",
+    "resolved": "97"
+  },
+  "python_version": "3.12.3",
+  "run_id": "run_20261011_104343_c0ef6d",
+  "seeds": {},
+  "slice_params": {},
+  "source_versions": {
+    "mondo": "2026-10-06",
+    "ols4": "api"
+  },
+  "trust_policy_version": "1.0"
+}

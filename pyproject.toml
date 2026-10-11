@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "biomedical-context-layer"
+version = "0.2.0"
+description = "Neurosymbolic governance over a multi-source biomedical knowledge graph, with an evaluation framework that bounds its own claims"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+
+# Core dependencies. Everything the graph, resolution, governance and evaluation
+# layers need. The UI and the LLM judge are optional extras.
+dependencies = [
+    "neo4j>=5.20",        # knowledge graph driver
+    "qdrant-client>=1.9", # vector store with payload filtering
+    "pyyaml>=6.0",        # declarative rule packs
+]
+
+[project.optional-dependencies]
+# LLM judge arms and Bedrock embeddings. Not needed for the graph, resolution,
+# conflict detection, schema-evolution or statistics work.
+agent = [
+    "boto3>=1.34",
+]
+# The inspection surface. Pure Python - no Node, no build step.
+ui = [
+    "nicegui>=2.0",
+]
+dev = [
+    "pytest>=8.0",
+]
+all = [
+    "biomedical-context-layer[agent,ui,dev]",
+]
+
+[project.urls]
+Repository = "https://github.com/Ramu-DE/BioMedicalGraph-neurosymbolic-governance-"
+
+[tool.setuptools.packages.find]
+include = ["biomedical*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q --strict-markers"
+markers = [
+    "integration: requires live Neo4j or Qdrant (skipped without credentials)",
+]

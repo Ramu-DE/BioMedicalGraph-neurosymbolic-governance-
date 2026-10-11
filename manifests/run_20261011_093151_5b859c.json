@@ -1,0 +1,22 @@
+{
+  "code_commit": "not-a-git-repo",
+  "created_at": "2026-10-11T09:31:51.036117+00:00",
+  "design_hash": "28a95d9341f607bf",
+  "notes": {
+    "embedding_model": "amazon.titan-embed-text-v2:0",
+    "errors": "0"
+  },
+  "python_version": "3.12.3",
+  "run_id": "run_20261011_093151_5b859c",
+  "seeds": {
+    "bootstrap": 20261011
+  },
+  "slice_params": {
+    "suite": "governance-module-E"
+  },
+  "source_versions": {
+    "graph_facts": "authored-v1",
+    "judge_model": "us.anthropic.claude-sonnet-4-6"
+  },
+  "trust_policy_version": "1.0"
+}

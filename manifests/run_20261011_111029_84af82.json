@@ -1,0 +1,17 @@
+{
+  "code_commit": "not-a-git-repo",
+  "created_at": "2026-10-11T11:10:29.239019+00:00",
+  "design_hash": "1213572eb6cb745f",
+  "notes": {
+    "summary": "{'total': 39, 'by_kind': {'indication_vs_adverse_event': 4, 'ambiguous_mention': 35}, 'requires_human': 39, 'auto_resolvable': 0, 'resolved': 0}"
+  },
+  "python_version": "3.12.3",
+  "run_id": "run_20261011_111029_84af82",
+  "seeds": {},
+  "slice_params": {},
+  "source_versions": {
+    "detector": "1.0",
+    "precedence": "vocab-precedence-v1"
+  },
+  "trust_policy_version": "1.0"
+}

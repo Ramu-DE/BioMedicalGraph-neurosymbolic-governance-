@@ -1,0 +1,21 @@
+{
+  "code_commit": "not-a-git-repo",
+  "created_at": "2026-10-11T09:46:12.013386+00:00",
+  "design_hash": "af73048deff7047c",
+  "notes": {
+    "resolution": "{'attempted': 40, 'resolved': 39, 'needs_review': 18, 'bands': {'multiple_candidates': 12, 'exact_identifier': 12, 'normalised_exact': 1}, 'round_trip': '18/22'}"
+  },
+  "python_version": "3.12.3",
+  "run_id": "run_20261011_094612_d8dfd9",
+  "seeds": {},
+  "slice_params": {
+    "condition": "melanoma"
+  },
+  "source_versions": {
+    "clinicaltrials.gov": "v2",
+    "hgnc": "hgnc-current",
+    "openfda.faers": "faers",
+    "rxnorm": "05-Oct-2026"
+  },
+  "trust_policy_version": "1.0"
+}

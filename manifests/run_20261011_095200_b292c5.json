@@ -1,0 +1,21 @@
+{
+  "code_commit": "not-a-git-repo",
+  "created_at": "2026-10-11T09:52:00.716141+00:00",
+  "design_hash": "9a5f043c4b9a3600",
+  "notes": {
+    "resolution": "{'attempted': 30, 'resolved': 19, 'needs_review': 18, 'bands': {'multiple_candidates': 18, 'exact_identifier': 7}, 'round_trip': '7/10'}"
+  },
+  "python_version": "3.12.3",
+  "run_id": "run_20261011_095200_b292c5",
+  "seeds": {},
+  "slice_params": {
+    "condition": "atrial fibrillation"
+  },
+  "source_versions": {
+    "clinicaltrials.gov": "v2",
+    "hgnc": "hgnc-current",
+    "openfda.faers": "faers",
+    "rxnorm": "05-Oct-2026"
+  },
+  "trust_policy_version": "1.0"
+}

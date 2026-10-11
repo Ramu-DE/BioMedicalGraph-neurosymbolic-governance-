@@ -1,0 +1,21 @@
+{
+  "code_commit": "not-a-git-repo",
+  "created_at": "2026-10-11T09:48:34.027834+00:00",
+  "design_hash": "c747cb21c0498f7d",
+  "notes": {
+    "resolution": "{'attempted': 30, 'resolved': 25, 'needs_review': 18, 'bands': {'multiple_candidates': 15, 'normalised_exact': 1, 'exact_identifier': 9}, 'round_trip': '13/14'}"
+  },
+  "python_version": "3.12.3",
+  "run_id": "run_20261011_094834_55d7d1",
+  "seeds": {},
+  "slice_params": {
+    "condition": "breast cancer"
+  },
+  "source_versions": {
+    "clinicaltrials.gov": "v2",
+    "hgnc": "hgnc-current",
+    "openfda.faers": "faers",
+    "rxnorm": "05-Oct-2026"
+  },
+  "trust_policy_version": "1.0"
+}

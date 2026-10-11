@@ -1,0 +1,785 @@
+{
+  "run_id": "run_20261011_093151_5b859c",
+  "design_hash": "28a95d9341f607bf",
+  "design": {
+    "case_ids": [
+      "E01-consent-wrong",
+      "E02-consent-right",
+      "E03-catalog-wrong",
+      "E04-drug-wrong",
+      "E05-drug-right",
+      "E06-approval-wrong",
+      "E07-ae-wrong",
+      "E08-ae-right",
+      "E09-trial-wrong",
+      "E10-trial-right",
+      "E11-crossdomain-wrong",
+      "E12-underpowered-right"
+    ],
+    "n_cases": 12,
+    "class_balance": {
+      "answer_wrong": 7,
+      "answer_correct": 5
+    },
+    "balance_rationale": "adversarial stress test of a governance gate; NOT a prevalence estimate. A constant-WRONG predictor scores 7/12 here without discriminating.",
+    "arms": [
+      "deterministic",
+      "judge_blind",
+      "judge_grounded",
+      "judge_rubric"
+    ],
+    "primary_metrics": [
+      "tpr",
+      "tnr",
+      "kappa"
+    ],
+    "secondary_metrics": [
+      "balanced_accuracy"
+    ],
+    "excluded_as_headline": [
+      "accuracy"
+    ],
+    "falsifier": "If judge_grounded matches deterministic, the original finding was about evidence access rather than about rules versus LLMs."
+  },
+  "judge_model": "us.anthropic.claude-sonnet-4-6",
+  "arms": {
+    "deterministic": {
+      "gets_graph_facts": true,
+      "gets_rubric": false,
+      "confusion": {
+        "tp": 7,
+        "fn": 0,
+        "tn": 5,
+        "fp": 0
+      },
+      "tpr": {
+        "value": 1.0,
+        "ci": [
+          0.6456695648259365,
+          1.0
+        ],
+        "k": 7,
+        "n": 7
+      },
+      "tnr": {
+        "value": 1.0,
+        "ci": [
+          0.5655175351015047,
+          1.0
+        ],
+        "k": 5,
+        "n": 5
+      },
+      "kappa": 1.0,
+      "kappa_ci": [
+        1.0,
+        1.0
+      ],
+      "balanced_accuracy": 1.0,
+      "accuracy": {
+        "value": 1.0,
+        "note": "determined by class balance; not a headline metric"
+      },
+      "degenerate": false,
+      "degenerate_note": ""
+    },
+    "judge_blind": {
+      "gets_graph_facts": false,
+      "gets_rubric": false,
+      "confusion": {
+        "tp": 6,
+        "fn": 1,
+        "tn": 2,
+        "fp": 3
+      },
+      "tpr": {
+        "value": 0.8571428571428571,
+        "ci": [
+          0.48687217064044774,
+          0.9743203756637924
+        ],
+        "k": 6,
+        "n": 7
+      },
+      "tnr": {
+        "value": 0.4,
+        "ci": [
+          0.11762077420017036,
+          0.7692757187795287
+        ],
+        "k": 2,
+        "n": 5
+      },
+      "kappa": 0.2727272727272727,
+      "kappa_ci": [
+        -0.2857142857142858,
+        0.7999999999999999
+      ],
+      "balanced_accuracy": 0.6285714285714286,
+      "accuracy": {
+        "value": 0.6666666666666666,
+        "note": "determined by class balance; not a headline metric"
+      },
+      "degenerate": false,
+      "degenerate_note": ""
+    },
+    "judge_grounded": {
+      "gets_graph_facts": true,
+      "gets_rubric": false,
+      "confusion": {
+        "tp": 6,
+        "fn": 1,
+        "tn": 5,
+        "fp": 0
+      },
+      "tpr": {
+        "value": 0.8571428571428571,
+        "ci": [
+          0.48687217064044774,
+          0.9743203756637924
+        ],
+        "k": 6,
+        "n": 7
+      },
+      "tnr": {
+        "value": 1.0,
+        "ci": [
+          0.5655175351015047,
+          1.0
+        ],
+        "k": 5,
+        "n": 5
+      },
+      "kappa": 0.8333333333333333,
+      "kappa_ci": [
+        0.43749999999999994,
+        1.0
+      ],
+      "balanced_accuracy": 0.9285714285714286,
+      "accuracy": {
+        "value": 0.9166666666666666,
+        "note": "determined by class balance; not a headline metric"
+      },
+      "degenerate": false,
+      "degenerate_note": ""
+    },
+    "judge_rubric": {
+      "gets_graph_facts": false,
+      "gets_rubric": true,
+      "confusion": {
+        "tp": 7,
+        "fn": 0,
+        "tn": 5,
+        "fp": 0
+      },
+      "tpr": {
+        "value": 1.0,
+        "ci": [
+          0.6456695648259365,
+          1.0
+        ],
+        "k": 7,
+        "n": 7
+      },
+      "tnr": {
+        "value": 1.0,
+        "ci": [
+          0.5655175351015047,
+          1.0
+        ],
+        "k": 5,
+        "n": 5
+      },
+      "kappa": 1.0,
+      "kappa_ci": [
+        1.0,
+        1.0
+      ],
+      "balanced_accuracy": 1.0,
+      "accuracy": {
+        "value": 1.0,
+        "note": "determined by class balance; not a headline metric"
+      },
+      "degenerate": false,
+      "degenerate_note": ""
+    }
+  },
+  "rows": [
+    {
+      "case_id": "E01-consent-wrong",
+      "category": "Consent Governance",
+      "arm": "deterministic",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "patient:PAT015.consent_status: graph='Withdrawn' answer asserts 'active'",
+      "latency_ms": 0.0,
+      "error": null,
+      "fact_hash": "acfb1f82c7eb"
+    },
+    {
+      "case_id": "E01-consent-wrong",
+      "category": "Consent Governance",
+      "arm": "judge_blind",
+      "answer_is_wrong": true,
+      "says_wrong": false,
+      "correct": false,
+      "raw": "PASS",
+      "latency_ms": 649.1,
+      "error": null,
+      "fact_hash": "acfb1f82c7eb"
+    },
+    {
+      "case_id": "E01-consent-wrong",
+      "category": "Consent Governance",
+      "arm": "judge_grounded",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 740.6,
+      "error": null,
+      "fact_hash": "acfb1f82c7eb"
+    },
+    {
+      "case_id": "E01-consent-wrong",
+      "category": "Consent Governance",
+      "arm": "judge_rubric",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 671.9,
+      "error": null,
+      "fact_hash": "acfb1f82c7eb"
+    },
+    {
+      "case_id": "E02-consent-right",
+      "category": "Consent Governance",
+      "arm": "deterministic",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "no contradiction against supplied facts",
+      "latency_ms": 0.0,
+      "error": null,
+      "fact_hash": "6f351121704b"
+    },
+    {
+      "case_id": "E02-consent-right",
+      "category": "Consent Governance",
+      "arm": "judge_blind",
+      "answer_is_wrong": false,
+      "says_wrong": true,
+      "correct": false,
+      "raw": "FAIL",
+      "latency_ms": 655.6,
+      "error": null,
+      "fact_hash": "6f351121704b"
+    },
+    {
+      "case_id": "E02-consent-right",
+      "category": "Consent Governance",
+      "arm": "judge_grounded",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "PASS",
+      "latency_ms": 674.4,
+      "error": null,
+      "fact_hash": "6f351121704b"
+    },
+    {
+      "case_id": "E02-consent-right",
+      "category": "Consent Governance",
+      "arm": "judge_rubric",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "PASS",
+      "latency_ms": 694.4,
+      "error": null,
+      "fact_hash": "6f351121704b"
+    },
+    {
+      "case_id": "E03-catalog-wrong",
+      "category": "Aggregate Governance",
+      "arm": "deterministic",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "POL_HUB_DQ: hub table has 0 DQ rules but answer certifies it",
+      "latency_ms": 0.0,
+      "error": null,
+      "fact_hash": "ccc7aee20804"
+    },
+    {
+      "case_id": "E03-catalog-wrong",
+      "category": "Aggregate Governance",
+      "arm": "judge_blind",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 664.0,
+      "error": null,
+      "fact_hash": "ccc7aee20804"
+    },
+    {
+      "case_id": "E03-catalog-wrong",
+      "category": "Aggregate Governance",
+      "arm": "judge_grounded",
+      "answer_is_wrong": true,
+      "says_wrong": false,
+      "correct": false,
+      "raw": "PASS",
+      "latency_ms": 673.9,
+      "error": null,
+      "fact_hash": "ccc7aee20804"
+    },
+    {
+      "case_id": "E03-catalog-wrong",
+      "category": "Aggregate Governance",
+      "arm": "judge_rubric",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 655.1,
+      "error": null,
+      "fact_hash": "ccc7aee20804"
+    },
+    {
+      "case_id": "E04-drug-wrong",
+      "category": "Drug Grounding",
+      "arm": "deterministic",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "drug:D007.target: graph='PD-L1' answer asserts 'pd-1'",
+      "latency_ms": 0.0,
+      "error": null,
+      "fact_hash": "92e4ffb0ac74"
+    },
+    {
+      "case_id": "E04-drug-wrong",
+      "category": "Drug Grounding",
+      "arm": "judge_blind",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 682.7,
+      "error": null,
+      "fact_hash": "92e4ffb0ac74"
+    },
+    {
+      "case_id": "E04-drug-wrong",
+      "category": "Drug Grounding",
+      "arm": "judge_grounded",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 733.3,
+      "error": null,
+      "fact_hash": "92e4ffb0ac74"
+    },
+    {
+      "case_id": "E04-drug-wrong",
+      "category": "Drug Grounding",
+      "arm": "judge_rubric",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 694.6,
+      "error": null,
+      "fact_hash": "92e4ffb0ac74"
+    },
+    {
+      "case_id": "E05-drug-right",
+      "category": "Drug Grounding",
+      "arm": "deterministic",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "no contradiction against supplied facts",
+      "latency_ms": 0.0,
+      "error": null,
+      "fact_hash": "38056f996ce7"
+    },
+    {
+      "case_id": "E05-drug-right",
+      "category": "Drug Grounding",
+      "arm": "judge_blind",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "PASS",
+      "latency_ms": 664.8,
+      "error": null,
+      "fact_hash": "38056f996ce7"
+    },
+    {
+      "case_id": "E05-drug-right",
+      "category": "Drug Grounding",
+      "arm": "judge_grounded",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "PASS",
+      "latency_ms": 626.1,
+      "error": null,
+      "fact_hash": "38056f996ce7"
+    },
+    {
+      "case_id": "E05-drug-right",
+      "category": "Drug Grounding",
+      "arm": "judge_rubric",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "PASS",
+      "latency_ms": 606.8,
+      "error": null,
+      "fact_hash": "38056f996ce7"
+    },
+    {
+      "case_id": "E06-approval-wrong",
+      "category": "Drug Grounding",
+      "arm": "deterministic",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "drug:D009.approval_status: graph='Investigational' answer asserts 'approved'",
+      "latency_ms": 0.0,
+      "error": null,
+      "fact_hash": "5aaa5c7c837d"
+    },
+    {
+      "case_id": "E06-approval-wrong",
+      "category": "Drug Grounding",
+      "arm": "judge_blind",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 702.2,
+      "error": null,
+      "fact_hash": "5aaa5c7c837d"
+    },
+    {
+      "case_id": "E06-approval-wrong",
+      "category": "Drug Grounding",
+      "arm": "judge_grounded",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 724.1,
+      "error": null,
+      "fact_hash": "5aaa5c7c837d"
+    },
+    {
+      "case_id": "E06-approval-wrong",
+      "category": "Drug Grounding",
+      "arm": "judge_rubric",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 848.8,
+      "error": null,
+      "fact_hash": "5aaa5c7c837d"
+    },
+    {
+      "case_id": "E07-ae-wrong",
+      "category": "Adverse Event Safety",
+      "arm": "deterministic",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "ae:AE004.severity: graph='Severe' answer asserts 'moderate'",
+      "latency_ms": 0.0,
+      "error": null,
+      "fact_hash": "2903cd6bc0a0"
+    },
+    {
+      "case_id": "E07-ae-wrong",
+      "category": "Adverse Event Safety",
+      "arm": "judge_blind",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 724.0,
+      "error": null,
+      "fact_hash": "2903cd6bc0a0"
+    },
+    {
+      "case_id": "E07-ae-wrong",
+      "category": "Adverse Event Safety",
+      "arm": "judge_grounded",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 732.9,
+      "error": null,
+      "fact_hash": "2903cd6bc0a0"
+    },
+    {
+      "case_id": "E07-ae-wrong",
+      "category": "Adverse Event Safety",
+      "arm": "judge_rubric",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 676.8,
+      "error": null,
+      "fact_hash": "2903cd6bc0a0"
+    },
+    {
+      "case_id": "E08-ae-right",
+      "category": "Adverse Event Safety",
+      "arm": "deterministic",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "no contradiction against supplied facts",
+      "latency_ms": 0.0,
+      "error": null,
+      "fact_hash": "cc0c764c48eb"
+    },
+    {
+      "case_id": "E08-ae-right",
+      "category": "Adverse Event Safety",
+      "arm": "judge_blind",
+      "answer_is_wrong": false,
+      "says_wrong": true,
+      "correct": false,
+      "raw": "FAIL",
+      "latency_ms": 670.8,
+      "error": null,
+      "fact_hash": "cc0c764c48eb"
+    },
+    {
+      "case_id": "E08-ae-right",
+      "category": "Adverse Event Safety",
+      "arm": "judge_grounded",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "PASS",
+      "latency_ms": 608.6,
+      "error": null,
+      "fact_hash": "cc0c764c48eb"
+    },
+    {
+      "case_id": "E08-ae-right",
+      "category": "Adverse Event Safety",
+      "arm": "judge_rubric",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "PASS",
+      "latency_ms": 598.6,
+      "error": null,
+      "fact_hash": "cc0c764c48eb"
+    },
+    {
+      "case_id": "E09-trial-wrong",
+      "category": "Trial Status",
+      "arm": "deterministic",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "trial:CT010.phase: graph='Phase 2' answer asserts 'phase 3'",
+      "latency_ms": 0.0,
+      "error": null,
+      "fact_hash": "5eeba57ad116"
+    },
+    {
+      "case_id": "E09-trial-wrong",
+      "category": "Trial Status",
+      "arm": "judge_blind",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 684.0,
+      "error": null,
+      "fact_hash": "5eeba57ad116"
+    },
+    {
+      "case_id": "E09-trial-wrong",
+      "category": "Trial Status",
+      "arm": "judge_grounded",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 688.6,
+      "error": null,
+      "fact_hash": "5eeba57ad116"
+    },
+    {
+      "case_id": "E09-trial-wrong",
+      "category": "Trial Status",
+      "arm": "judge_rubric",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 678.6,
+      "error": null,
+      "fact_hash": "5eeba57ad116"
+    },
+    {
+      "case_id": "E10-trial-right",
+      "category": "Trial Status",
+      "arm": "deterministic",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "no contradiction against supplied facts",
+      "latency_ms": 0.0,
+      "error": null,
+      "fact_hash": "e6ca603f3def"
+    },
+    {
+      "case_id": "E10-trial-right",
+      "category": "Trial Status",
+      "arm": "judge_blind",
+      "answer_is_wrong": false,
+      "says_wrong": true,
+      "correct": false,
+      "raw": "FAIL",
+      "latency_ms": 708.0,
+      "error": null,
+      "fact_hash": "e6ca603f3def"
+    },
+    {
+      "case_id": "E10-trial-right",
+      "category": "Trial Status",
+      "arm": "judge_grounded",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "PASS",
+      "latency_ms": 641.3,
+      "error": null,
+      "fact_hash": "e6ca603f3def"
+    },
+    {
+      "case_id": "E10-trial-right",
+      "category": "Trial Status",
+      "arm": "judge_rubric",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "PASS",
+      "latency_ms": 631.4,
+      "error": null,
+      "fact_hash": "e6ca603f3def"
+    },
+    {
+      "case_id": "E11-crossdomain-wrong",
+      "category": "Cross-domain",
+      "arm": "deterministic",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "POL_HUB_DQ: hub table has 0 DQ rules but answer certifies it",
+      "latency_ms": 0.0,
+      "error": null,
+      "fact_hash": "eccba65013e1"
+    },
+    {
+      "case_id": "E11-crossdomain-wrong",
+      "category": "Cross-domain",
+      "arm": "judge_blind",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 905.0,
+      "error": null,
+      "fact_hash": "eccba65013e1"
+    },
+    {
+      "case_id": "E11-crossdomain-wrong",
+      "category": "Cross-domain",
+      "arm": "judge_grounded",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 822.2,
+      "error": null,
+      "fact_hash": "eccba65013e1"
+    },
+    {
+      "case_id": "E11-crossdomain-wrong",
+      "category": "Cross-domain",
+      "arm": "judge_rubric",
+      "answer_is_wrong": true,
+      "says_wrong": true,
+      "correct": true,
+      "raw": "FAIL",
+      "latency_ms": 847.1,
+      "error": null,
+      "fact_hash": "eccba65013e1"
+    },
+    {
+      "case_id": "E12-underpowered-right",
+      "category": "Patient Data",
+      "arm": "deterministic",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "no contradiction against supplied facts",
+      "latency_ms": 0.0,
+      "error": null,
+      "fact_hash": "bf66ff9ca91d"
+    },
+    {
+      "case_id": "E12-underpowered-right",
+      "category": "Patient Data",
+      "arm": "judge_blind",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "PASS",
+      "latency_ms": 673.9,
+      "error": null,
+      "fact_hash": "bf66ff9ca91d"
+    },
+    {
+      "case_id": "E12-underpowered-right",
+      "category": "Patient Data",
+      "arm": "judge_grounded",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "PASS",
+      "latency_ms": 681.7,
+      "error": null,
+      "fact_hash": "bf66ff9ca91d"
+    },
+    {
+      "case_id": "E12-underpowered-right",
+      "category": "Patient Data",
+      "arm": "judge_rubric",
+      "answer_is_wrong": false,
+      "says_wrong": false,
+      "correct": true,
+      "raw": "PASS",
+      "latency_ms": 612.9,
+      "error": null,
+      "fact_hash": "bf66ff9ca91d"
+    }
+  ]
+}
