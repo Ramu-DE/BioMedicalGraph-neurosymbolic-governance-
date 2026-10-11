@@ -16,6 +16,7 @@ __pycache__/
 # Not committed: it goes stale as the graph changes, and stale published
 # output is the failure mode this project is about.
 site/
+report.html
 
 # scratch
 *.log

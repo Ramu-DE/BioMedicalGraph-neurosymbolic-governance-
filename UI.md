@@ -4,10 +4,23 @@ Two renderers over the same data. **If your browser shows "Your browser does not
 support ES modules", use the second one.**
 
 ```bash
-python -m biomedical.ui.plain --export site   # static HTML, no server at all
-python -m biomedical.ui.plain                 # zero JS      -> localhost:8098
-python -m biomedical.ui                       # NiceGUI      -> localhost:8099
+python -m biomedical.ui.plain --single report.html  # ONE file, nothing to click
+python -m biomedical.ui.plain --export site         # eight linked files
+python -m biomedical.ui.plain                       # server -> localhost:8098
+python -m biomedical.ui                             # NiceGUI -> localhost:8099
 ```
+
+**Start with `--single`.** It is the most robust artefact available: every
+surface stacked in one self-contained file. No navigation, no links to follow,
+no server, no port, no proxy, no JavaScript, no external asset.
+
+```
+report.html   186,011 bytes   8 sections   51,724 chars of visible text
+              0 script tags · 0 external refs · 0 links · 1 inline <style>
+```
+
+Sections in order: Overview · Decision trace · Evaluation · Contradictions ·
+Schema evolution · Claims register · Provenance · Review queue. Just scroll.
 
 **If a browser or proxy shows "Your browser does not support ES modules", use
 `--export`.** It removes the server, the port and the proxy from the equation:

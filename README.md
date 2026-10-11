@@ -248,6 +248,7 @@ network.** That is a hard invariant, verified in CI.
 ```bash
 python config.py        # redacted readiness report — no secret, no instance id
 python -m pytest        # 197 tests, credential-free, no network
+python -m biomedical.ui.plain --single report.html  # ONE self-contained file
 python -m biomedical.ui.plain --export site   # static HTML — no server, no port
 python -m biomedical.ui.plain  # inspection UI, zero JavaScript, http://localhost:8098
 python -m biomedical.ui        # same surfaces via NiceGUI,     http://localhost:8099
