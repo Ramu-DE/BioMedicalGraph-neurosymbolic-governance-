@@ -11,6 +11,12 @@ __pycache__/
 *.egg-info/
 .pytest_cache/
 
+# generated static export — regenerate with:
+#   python -m biomedical.ui.plain --export site
+# Not committed: it goes stale as the graph changes, and stale published
+# output is the failure mode this project is about.
+site/
+
 # scratch
 *.log
 .DS_Store

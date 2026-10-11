@@ -28,7 +28,7 @@ import sys
 import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, quote, urlparse
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -649,15 +649,70 @@ class Handler(BaseHTTPRequestHandler):
         entity_id = form.get("entity_id", [None])[0]
         try:
             data.record_review(raw, entity_id, decision, "plain-ui")
-            msg = (f"{decision}ed {raw[:40]} — prior resolution superseded, not overwritten")
+            msg = f"{decision}ed {raw[:40]} - prior resolution superseded, not overwritten"
         except Exception as exc:  # noqa: BLE001
             msg = f"failed: {type(exc).__name__}: {exc}"
+        # HTTP headers are latin-1 (RFC 7230). An em-dash in the message raised
+        # UnicodeEncodeError and killed the connection, so "accept" produced a
+        # dead page. Percent-encode, and keep the header ASCII-only.
         self.send_response(303)
-        self.send_header("Location", f"/review?msg={html.escape(msg)}")
+        self.send_header("Location", "/review?msg=" + quote(msg, safe=""))
         self.end_headers()
 
 
+def export(out_dir: str = "site") -> list[Path]:
+    """Write every surface as a self-contained .html file.
+
+    Removes the server, the port and the proxy from the equation entirely: open
+    the files with file:// and they render. Links are rewritten to relative
+    filenames so navigation works offline.
+    """
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    views = {
+        "/": ("index.html", v_overview),
+        "/review": ("review.html", lambda: v_review("")),
+        "/entities": ("entities.html", lambda: v_entities("pembrolizumab")),
+        "/decision": ("decision.html", v_decision),
+        "/eval": ("eval.html", v_eval),
+        "/conflicts": ("conflicts.html", v_conflicts),
+        "/releases": ("releases.html", v_releases),
+        "/claims": ("claims.html", v_claims),
+    }
+    files: list[Path] = []
+    for path, (fname, view) in views.items():
+        try:
+            body = view()
+        except config.NotConfigured as exc:
+            body = (f'<div class="err"><b>Not configured</b><pre '
+                    f'style="white-space:pre-wrap">{e(exc)}</pre></div>')
+        except Exception as exc:  # noqa: BLE001
+            body = f'<div class="err"><b>{e(type(exc).__name__)}</b><br>{e(exc)}</div>'
+        doc = page(path, TITLES[path], SUBS.get(path, ""), body).decode()
+        # rewrite nav + internal links to relative files
+        for p2, (f2, _) in views.items():
+            doc = doc.replace(f'href="{p2}"', f'href="{f2}"')
+        doc = doc.replace('href="/entities?q=', 'href="entities.html?q=')
+        doc = doc.replace('<form method="post" action="/review">',
+                          '<form method="post" action="review.html">')
+        doc = doc.replace("<form method='post' action='/review'>",
+                          "<form method='post' action='review.html'>")
+        target = out / fname
+        target.write_text(doc)
+        files.append(target)
+        print(f"  {target}  ({len(doc):,} bytes)")
+    print(f"\n{len(files)} static pages in {out.resolve()}")
+    print(f"open {(out / 'index.html').resolve()}")
+    print("No server, no port, no proxy. Forms are inert in static mode.")
+    return files
+
+
 def main() -> None:
+    if "--export" in sys.argv:
+        i = sys.argv.index("--export")
+        target = sys.argv[i + 1] if len(sys.argv) > i + 1 else "site"
+        export(target)
+        return
     port = int(os.environ.get("PLAIN_UI_PORT", "8098"))
     cfg = config.load()
     print("BioMedical Context Layer — zero-JavaScript inspection surface")

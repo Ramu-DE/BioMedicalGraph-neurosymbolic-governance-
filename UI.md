@@ -4,9 +4,29 @@ Two renderers over the same data. **If your browser shows "Your browser does not
 support ES modules", use the second one.**
 
 ```bash
-python -m biomedical.ui.plain     # zero JavaScript   -> http://localhost:8098
-python -m biomedical.ui           # NiceGUI           -> http://localhost:8099
+python -m biomedical.ui.plain --export site   # static HTML, no server at all
+python -m biomedical.ui.plain                 # zero JS      -> localhost:8098
+python -m biomedical.ui                       # NiceGUI      -> localhost:8099
 ```
+
+**If a browser or proxy shows "Your browser does not support ES modules", use
+`--export`.** It removes the server, the port and the proxy from the equation:
+eight self-contained `.html` files you open with `file://`.
+
+```
+site/index.html      9,319B      site/eval.html        12,569B
+site/review.html   134,086B      site/conflicts.html   35,193B
+site/entities.html   9,096B      site/releases.html     9,207B
+site/decision.html   8,494B      site/claims.html       8,892B
+```
+
+Verified self-contained: 0 `<script>` tags, 0 external references, 0
+absolute-path assets, 1 inline `<style>`, nav links rewritten to relative
+filenames so navigation works offline.
+
+The export is a **snapshot**. The review queue's accept/reject buttons are inert
+in static mode — forms need a server to POST to. Every other surface is
+read-only anyway, so the snapshot loses nothing.
 
 | | `ui.plain` | `ui` (NiceGUI) |
 |---|---|---|
@@ -96,6 +116,19 @@ The review queue uses plain HTML `POST` forms, so accepting a candidate works in
 any browser. Verified end to end: `needs_review` 178 → 177, `cleared` 1 → 2,
 `superseded` 1 → 2 — it **supersedes** the prior resolution rather than
 overwriting it, and the superseded edge is retained.
+
+## A bug worth recording
+
+`do_POST` crashed with `UnicodeEncodeError`: HTTP headers are latin-1 per
+RFC 7230, and the redirect message after accepting a review item contained an
+em-dash. The connection died, so clicking **accept** produced a dead page rather
+than an error. Fixed by percent-encoding the redirect and keeping the header
+ASCII-only.
+
+It was found by reading the server log while diagnosing a report of blank pages —
+which turned out to be a different problem entirely (the browser was never
+reaching this server; all logged requests were from local `curl`). Two unrelated
+faults, one of them real.
 
 ## Still not built
 
