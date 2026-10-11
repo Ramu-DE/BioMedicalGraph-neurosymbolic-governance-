@@ -24,7 +24,9 @@ dependencies = [
 agent = [
     "boto3>=1.34",
 ]
-# The inspection surface. Pure Python - no Node, no build step.
+# The richer inspection surface. `python -m biomedical.ui.plain` needs NONE of
+# this - it is server-rendered on the stdlib - so install this only if you want
+# the live NiceGUI version.
 ui = [
     "nicegui>=2.0",
 ]

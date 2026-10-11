@@ -248,7 +248,8 @@ network.** That is a hard invariant, verified in CI.
 ```bash
 python config.py        # redacted readiness report — no secret, no instance id
 python -m pytest        # 197 tests, credential-free, no network
-python -m biomedical.ui # the inspection UI, http://localhost:8099
+python -m biomedical.ui.plain  # inspection UI, zero JavaScript, http://localhost:8098
+python -m biomedical.ui        # same surfaces via NiceGUI,     http://localhost:8099
 ```
 
 Everything else is an **executed notebook with its outputs saved** — open one and
@@ -266,6 +267,10 @@ the results are already there, no credentials needed to read it:
 → [`notebooks/README.md`](notebooks/README.md) for all nine, with runtimes.
 
 `02` needs no credentials at all. It is the one to read first.
+
+Use `ui.plain` if your browser or proxy shows *"Your browser does not support ES
+modules"* — it is server-rendered with no JavaScript, no websocket and no external
+assets, and needs no optional dependency.
 
 → [`UI.md`](./UI.md) · [`GRAPH.md`](./GRAPH.md) ·
 [`FINDINGS.md`](./FINDINGS.md) · [`STATUS.md`](./STATUS.md)
